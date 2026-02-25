@@ -47,6 +47,12 @@ const server = http.createServer((req, res) => {
 
          req.on("end", () => {
             const novoAtendimento = JSON.parse(body);
+
+            if (!novoAtendimento.aluno || !novoAtendimento.assunto) {
+               res.writeHead(400, { "Content-Type": "application/json" });
+               return res.end(JSON.stringify({ error: "Campos obrigatórios: aluno e assunto" }));
+            }
+
             currentId++;
             const atendimento = {
                id: currentId,
