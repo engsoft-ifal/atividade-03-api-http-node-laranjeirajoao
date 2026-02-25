@@ -23,20 +23,22 @@ const server = http.createServer((req, res) => {
    if (req.url.startsWith("/atendimentos")) {
       const match = req.url.match(/^\/atendimentos\/(\d+)$/);
 
-      if (req.method === "GET" && !match) {
-         res.writeHead(200, { "Content-Type": "application/json" });
-         return res.end(JSON.stringify(atendimentos));
-      }
-
-      if (req.method === "GET" && match) {
-         const id = Number(match[1])
-         const atendimento = atendimentos.find(a => a.id === id);
-         if (!atendimento) {
-            res.writeHead(404, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({ error: "Atendimento não encontrado" }));
+      if (req.method === "GET") {
+         if (match) {
+            //Busca por id
+            const id = Number(match[1])
+            const atendimento = atendimentos.find(a => a.id === id);
+            if (!atendimento) {
+               res.writeHead(404, { "Content-Type": "application/json" });
+               return res.end(JSON.stringify({ error: "Atendimento não encontrado" }));
+            }
+            res.writeHead(200, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify(atendimento));
+         } else {
+            // Retorna todos
+            res.writeHead(200, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify(atendimentos));
          }
-         res.writeHead(200, { "Content-Type": "application/json" });
-         return res.end(JSON.stringify(atendimento));
       }
 
       if (req.method === "POST") {
@@ -65,10 +67,10 @@ const server = http.createServer((req, res) => {
          });
          return;
       }
-
-      res.writeHead(404, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "Endpoint não encontrado" }));
    }
+
+   res.writeHead(404, { "Content-Type": "application/json" });
+   res.end(JSON.stringify({ error: "Endpoint não encontrado" }));
 })
 
 
