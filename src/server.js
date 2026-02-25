@@ -13,8 +13,8 @@ Aluno (string)
 Assunto (string)
 */
 
-let atendimentos = [{ id: 1, aluno: "Joao", assunto: "asas" }]
-let currentId = 0
+let atendimentos = []
+let currentId = atendimentos.length
 
 const server = http.createServer((req, res) => {
 
@@ -45,7 +45,30 @@ const server = http.createServer((req, res) => {
          return res.end(JSON.stringify(atendimento));
       }
 
+      if (req.method === "POST") {
+         let body = ""
+         req.on("data", (chunk) => {
+            body += chunk.toString()
+         })
 
+         req.on("end", () => {
+            const novoAtendimento = JSON.parse(body);
+
+            currentId++;
+
+            const atendimento = {
+               id: currentId,
+               aluno: novoAtendimento.aluno,
+               assunto: novoAtendimento.assunto
+            };
+
+            atendimentos.push(atendimento);
+
+            res.writeHead(201, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(atendimento));
+         });
+         return;
+      }
 
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Endpoint não encontrado" }));
