@@ -23,7 +23,28 @@ const server = http.createServer((req, res) => {
       res.end(JSON.stringify({ status: 'ok' }));
    }
 
+   if (req.url.startsWith("/atendimentos")) {
+      const match = req.url.match(/^\/atendimentos\/(\d+)$/);
 
+      if (req.method === "GET" && !match) {
+         res.writeHead(200, { "Content-Type": "application/json" });
+         res.end(JSON.stringify(atendimentos));
+         return;
+      }
+
+      if (req.method === "GET" && match) {
+         const id = Number(match[1])
+         const atendimento = atendimentos.find(a => a.id === id);
+
+         if (!atendimento) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Atendimento não encontrado" }));
+            return;
+         }
+         res.writeHead(200, { "Content-Type": "application/json" });
+         return res.end(JSON.stringify(atendimento));
+      }
+   }
 })
 
 
