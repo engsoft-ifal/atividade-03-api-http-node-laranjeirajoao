@@ -1,6 +1,4 @@
-//Código do servidor
-import http from "http";
-
+import http from "node:http";
 
 const port = 3000
 const hostname = "127.0.0.1"
@@ -14,13 +12,12 @@ Assunto (string)
 */
 
 let atendimentos = []
-let currentId = atendimentos.length
+let currentId = 0
 
 const server = http.createServer((req, res) => {
-
    if (req.url === "/health") {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'ok' }));
+      return res.end(JSON.stringify({ status: 'ok' }));
    }
 
    if (req.url.startsWith("/atendimentos")) {
@@ -28,18 +25,15 @@ const server = http.createServer((req, res) => {
 
       if (req.method === "GET" && !match) {
          res.writeHead(200, { "Content-Type": "application/json" });
-         res.end(JSON.stringify(atendimentos));
-         return;
+         return res.end(JSON.stringify(atendimentos));
       }
 
       if (req.method === "GET" && match) {
          const id = Number(match[1])
          const atendimento = atendimentos.find(a => a.id === id);
-
          if (!atendimento) {
             res.writeHead(404, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ error: "Atendimento não encontrado" }));
-            return;
+            return res.end(JSON.stringify({ error: "Atendimento não encontrado" }));
          }
          res.writeHead(200, { "Content-Type": "application/json" });
          return res.end(JSON.stringify(atendimento));
@@ -53,17 +47,13 @@ const server = http.createServer((req, res) => {
 
          req.on("end", () => {
             const novoAtendimento = JSON.parse(body);
-
             currentId++;
-
             const atendimento = {
                id: currentId,
                aluno: novoAtendimento.aluno,
                assunto: novoAtendimento.assunto
             };
-
             atendimentos.push(atendimento);
-
             res.writeHead(201, { "Content-Type": "application/json" });
             res.end(JSON.stringify(atendimento));
          });
