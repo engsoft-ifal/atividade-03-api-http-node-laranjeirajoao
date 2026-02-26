@@ -22,6 +22,7 @@ const server = http.createServer((req, res) => {
 
    if (req.url.startsWith("/atendimentos")) {
       const match = req.url.match(/^\/atendimentos\/(\d+)$/);
+      const isRoot = req.url === "/atendimentos"
 
       if (req.method === "GET") {
          if (match) {
@@ -34,14 +35,14 @@ const server = http.createServer((req, res) => {
             }
             res.writeHead(200, { "Content-Type": "application/json" });
             return res.end(JSON.stringify(atendimento));
-         } else {
+         } else if (isRoot) {
             // Retorna todos
             res.writeHead(200, { "Content-Type": "application/json" });
             return res.end(JSON.stringify(atendimentos));
          }
       }
 
-      if (req.method === "POST") {
+      if (req.method === "POST" && isRoot) {
          let body = ""
          req.on("data", (chunk) => {
             body += chunk.toString()
