@@ -8,6 +8,8 @@ jobs:
 
       steps:
          - uses: actions/checkout@v4
+           with:
+              fetch-depth: 0
 
          - name: Check minimum commits
            run: |
@@ -21,9 +23,9 @@ jobs:
            run: |
               test -f src/server.js || (echo "src/server.js não encontrado" && exit 1)
 
-         - name: Check Express not used
+         - name: Check Express not installed
            run: |
-              if grep -Ri "express" .; then
+              if grep -q '"express"' package.json; then
                 echo "Express não é permitido"
                 exit 1
               fi
