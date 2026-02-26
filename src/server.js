@@ -52,7 +52,10 @@ const server = http.createServer((req, res) => {
             try {
                const novoAtendimento = JSON.parse(body);
 
-               if (!novoAtendimento.aluno || !novoAtendimento.assunto) {
+               if (typeof novoAtendimento.aluno !== "string" ||
+                  typeof novoAtendimento.assunto !== "string" ||
+                  !novoAtendimento.aluno.trim() ||
+                  !novoAtendimento.assunto.trim()) {
                   res.writeHead(422, { "Content-Type": "application/json" });
                   return res.end(JSON.stringify({ error: "Campos obrigatórios: aluno e assunto" }));
                }
